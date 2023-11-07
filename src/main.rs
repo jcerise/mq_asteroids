@@ -80,14 +80,24 @@ async fn main() {
         let frame_t = get_time();
         clear_background(BLACK);
 
-        handle_input(&mut ship);
+        if is_key_down(KeyCode::Up) {
+            let acceleration = Vec2::from_angle(ship.rotation) * 0.1;
+            ship.update_velocity(acceleration);
+        }
+
+        if is_key_down(KeyCode::Right) {
+            ship.update_rotation(ship.rotation + 0.1)
+        }
+        if is_key_down(KeyCode::Left) {
+            ship.update_rotation(ship.rotation - 0.1)
+        }
 
         if is_key_down(KeyCode::Space) && frame_t - last_shot > 0.2 {
             let rot_vec = Vec2::new(ship.rotation.sin(), -ship.rotation.cos());
             bullets.push(MoveableObject {
                 texture: &bullet_texture,
                 position: (ship.position + Vec2::from_angle(ship.rotation)),
-                velocity: Vec2::from_angle(ship.rotation) * 5.,
+                velocity: Vec2::from_angle(ship.rotation) * 10.,
                 rotation: 0.0,
                 rect: Default::default(),
                 created_at: frame_t,
@@ -107,22 +117,4 @@ async fn main() {
 
         next_frame().await
     }
-}
-
-fn handle_input(p: &mut MoveableObject) {
-    let mut rot_delta: f32 = 0.;
-    if is_key_down(KeyCode::Right) {
-        rot_delta += 0.1;
-    }
-    if is_key_down(KeyCode::Left) {
-        rot_delta += -0.1;
-    }
-
-
-    if is_key_down(KeyCode::Up) {
-        let acceleration = Vec2::from_angle(p.rotation) * 0.1;
-        p.update_velocity(acceleration);
-    }
-
-    p.update_rotation(p.rotation + rot_delta)
 }
