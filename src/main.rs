@@ -9,7 +9,6 @@ trait GameObject {
     fn draw(&mut self);
 }
 
-#[derive(Clone, Copy)]
 struct Ship<'a> {
     texture: &'a Texture2D,
     position: Vec2,
@@ -156,9 +155,9 @@ async fn main() {
     large_asteroid_textures.push(large_asteroid_texture_3);
 
     // Create five asteroids, and set them in motion with random velocity
-    for x in 0..8 {
+    for _ in 0..8 {
         let rotation = rng.gen_range(-10.0..=10.0);
-        let pos = (Vec2::new(rng.gen_range(0.0..=screen_width()), rng.gen_range(0.0..=screen_height())));
+        let pos = Vec2::new(rng.gen_range(0.0..=screen_width()), rng.gen_range(0.0..=screen_height()));
         let tex = large_asteroid_textures.choose().unwrap();
         asteroids.push( Asteroid{
             texture: tex,
@@ -192,7 +191,6 @@ async fn main() {
         }
 
         if is_key_down(KeyCode::Space) && frame_t - last_shot > 0.2 {
-            let rot_vec = Vec2::new(ship.rotation.sin(), -ship.rotation.cos());
             let pos = ship.position + Vec2::from_angle(ship.rotation);
             bullets.push(Bullet {
                 texture: &bullet_texture,
@@ -219,7 +217,7 @@ async fn main() {
         }
 
         // Check bullet and asteroid collision
-        let mut new_asteroids: &mut Vec<Asteroid> = &mut Vec::new();
+        let new_asteroids: &mut Vec<Asteroid> = &mut Vec::new();
         for asteroid in asteroids.iter_mut() {
             for bullet in bullets.iter_mut() {
                 if asteroid.rect.overlaps(&bullet.rect) {
@@ -228,7 +226,7 @@ async fn main() {
 
                     if asteroid.large {
                         // Break the asteroid into several smaller asteroids
-                        for x in 2..rng.gen_range(3..=5) {
+                        for _ in 2..rng.gen_range(3..=8) {
                             let rotation = rng.gen_range(-10.0..=10.0);
                             let pos = asteroid.position;
                             new_asteroids.push( Asteroid{
